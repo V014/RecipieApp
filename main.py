@@ -1,8 +1,28 @@
+from multiprocessing import connection
 import tkinter as tk
+import sqlite3
 from turtle import bgcolor
 from PIL import ImageTk
+from numpy import random
 
 bg_color ="#3d6466"
+
+def fetch_db():
+    connection = sqlite3.connect("assets/recipies.db")
+    cursor = connection.cursor()
+    # fetch all the table names
+    cursor.execute("SELECT * FROM sqlite_schema WHERE type='table';")
+    all_tables = cursor.fetchall()
+    # choose random recipie idx
+    idx = random.randit(0, len(all_tables)-1)
+
+    # fetch ingredients
+    table_name = all_tables[idx][1]
+    cursor.execute("SELECT * FROM" + table_name + ";")
+    ingredient = cursor.fetchall()
+
+    print(all_tables[0])
+    connection.close()
 
 def load_frame1():
     frame1.pack_propagate(False)
@@ -33,7 +53,7 @@ def load_frame1():
         ).pack(pady=20)
 
 def load_frame2():
-    print("hello void")
+    fetch_db()
 
 # initallize app
 root = tk.Tk()
