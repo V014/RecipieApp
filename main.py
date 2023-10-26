@@ -1,10 +1,10 @@
-from multiprocessing import connection
 import tkinter as tk
 import sqlite3
-from turtle import bgcolor
 from PIL import ImageTk
 from numpy import random
+import pyglet
 
+# set colours
 bg_color ="#3d6466"
 
 def fetch_db():
@@ -14,15 +14,20 @@ def fetch_db():
     cursor.execute("SELECT * FROM sqlite_schema WHERE type='table';")
     all_tables = cursor.fetchall()
     # choose random recipie idx
-    idx = random.randit(0, len(all_tables)-1)
+    idx = random.randint(0, len(all_tables)-1)
 
     # fetch ingredients
     table_name = all_tables[idx][1]
-    cursor.execute("SELECT * FROM" + table_name + ";")
-    ingredient = cursor.fetchall()
+    cursor.execute("SELECT * FROM " + table_name + ";")
+    table_records = cursor.fetchall()
 
-    print(all_tables[0])
     connection.close()
+    return table_name, table_records
+
+def pre_process(table_name, table_records):
+    title = table_name[:-6]
+    title = "".join([char if char.islower() else " " + char for char in title])
+    print(title)
 
 def load_frame1():
     frame1.pack_propagate(False)
@@ -53,7 +58,8 @@ def load_frame1():
         ).pack(pady=20)
 
 def load_frame2():
-    fetch_db()
+    table_name, table_records = fetch_db()
+    pre_process(table_name, table_records)
 
 # initallize app
 root = tk.Tk()
